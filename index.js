@@ -44,7 +44,12 @@ app.get('/contacts', async (req, res, next) => {
 });
 app.get('/contacts/:id', async (req, res, next) => {
     try{
-        res.status(200).json(contacts.find(c => c.id === req.params['id']));
+		const tmp = contacts.find(c => c.id === +req.params['id'])
+		if(tmp){
+			res.status(200).json(tmp);
+		}else{
+			res.status(404).json('No such contact exists');
+		}
     }catch(error){
         next(error);
     }
@@ -59,10 +64,10 @@ app.post('/contacts', async (req, res, next) => {
         next(error);
     }
 });
-app.put('/contacts', async (req, res, next) => {
+app.put('/contacts/:id', async (req, res, next) => {
     try{
         console.log(req.body)
-        contacts.splice(contacts.findIndex(c => c.id === req.params['id']), 1, req.body);
+		Object.assign(contacts.find(c => c.id === +req.params['id']), req.body);
         res.status(200).json(true);
     }catch(error){
         next(error);
@@ -70,7 +75,7 @@ app.put('/contacts', async (req, res, next) => {
 });
 app.delete('/contacts/:id', async (req, res, next) => {
     try{
-        contacts.splice(contacts.findIndex(c => c.id === req.params['id']), 1);
+        contacts.splice(contacts.findIndex(c => c.id === +req.params['id']), 1);
         res.status(200).json(true);
     }catch(error){
         next(error);
